@@ -1,0 +1,57 @@
+Need to be running docker first.
+
+From: https://github.com/markshust/docker-magento/issues/832
+
+Copy or clone your project to src/ folder
+Copy a version of app/etc/env.php from one of your environments to src/app/etc/. Update it accordingly to the values from the env/*.env files.
+Optional: check that you have all the files required in your project. Our git repo was missing some files in app, app/etc (for example NonComposerComponentRegistration.php, db_schema.xml and others...), so i had to manually copy them to /src folder at this point. This is a repo issue, not something with this docker setup, just if someone happen to have the same issue, something to keep in mind. Also, check all the files in compose.dev.yaml which are mounted exist in your project, otherwise you will get an error when trying to start the containers.
+bin/start --no-dev
+bin/copytocontainer --all
+At this step, ignore warnings about are some folders missing. When you run bin/copytocontainer --all, it runs bin/fixperms as well. If you check the content of the fixperms, it does this:
+bin/clinotty find var vendor pub/static pub/media app/etc ( -type f -or -type d ) -exec chmod u+w {} +;
+But, at this point, we do not have these folders in our container yet. I think this script could be optimized, to check first if these folders exists or not.
+bin/setup-composer-auth
+bin/clinotty composer config --no-plugins allow-plugins.magento/magento-composer-installer true
+bin/clinotty composer config --no-plugins allow-plugins.magento/inventory-composer-installer true
+bin/clinotty composer config --no-plugins allow-plugins.laminas/laminas-dependency-plugin true
+bin/composer install
+If vendor folder is not present yet, because we have cloned it from git, run the above command to install all the packages.
+bin/fixowns && bin/fixperms
+bin/mysql < your-db-dumb.sql
+Import your database and set up any local config values which are specific to your local environment.
+bin/magento setup:upgrade
+bin/clinotty bin/magento setup:static-content:deploy -f -j 4
+bin/clinotty bin/magento indexer:reindex
+bin/setup-domain dish-dev.local
+bin/fixowns && bin/fixperms (idk if this one is required here, i just added it to be sure
+bin/clinotty bin/magento cache:flush
+bin/clinotty bin/magento cron:install
+bin/clinotty bin/magento deploy:mode:set developer (probably can skip if you have developer mode in your env.php file already).
+
+based on https://github.com/markshust/docker-magento#existing-projects
+
+For Magento 2.4.2 I needed to edit compose.yaml
+PHPFPM: markoshust/magento-php:7.4-fpm
+DB: mariadb:10.4
+ElasticSearch: markoshust/magento-elasticsearch:7.9.3-1
+Redis: redis:6.0-alpine
+From <https://github.com/markshust/docker-magento/issues/844> 
+
+Here's what I actually did from WSL:
+ 1028  curl -s https://raw.githubusercontent.com/markshust/docker-magento/master/lib/template | bash
+ 1033  bin/start --no-dev
+ 1039  bin/copytocontainer --all
+ 1040  bin/clinotty composer config --no-plugins allow-plugins.magento/magento-composer-installer true
+ 1041  bin/clinotty composer config --no-plugins allow-plugins.magento/inventory-composer-installer true
+ 1042  bin/clinotty composer config --no-plugins allow-plugins.laminas/laminas-dependency-plugin true
+ 1043  bin/composer install
+ 1044  bin/fixowns && bin/fixperms
+ 1045  bin/mysql < r7myamqizbogq--master-7rqtwti--mysql--main--dump.sql
+ 1046  bin/magento setup:upgrade
+ 1047  bin/clinotty bin/magento setup:static-content:deploy -f -j 4
+ 1048  bin/clinotty bin/magento indexer:reindex
+ 1049  bin/setup-domain magento2.test
+ 1053  bin/fixowns && bin/fixperms
+ 1054  bin/clinotty bin/magento cache:flush
+ 1055  bin/clinotty bin/magento cron:install
+ 1056  bin/clinotty bin/magento deploy:mode:set developer
