@@ -38,20 +38,21 @@ Redis: redis:6.0-alpine
 From <https://github.com/markshust/docker-magento/issues/844> 
 
 Here's what I actually did from WSL:
- 1028  curl -s https://raw.githubusercontent.com/markshust/docker-magento/master/lib/template | bash
- 1033  bin/start --no-dev
- 1039  bin/copytocontainer --all
- 1040  bin/clinotty composer config --no-plugins allow-plugins.magento/magento-composer-installer true
- 1041  bin/clinotty composer config --no-plugins allow-plugins.magento/inventory-composer-installer true
- 1042  bin/clinotty composer config --no-plugins allow-plugins.laminas/laminas-dependency-plugin true
- 1043  bin/composer install
- 1044  bin/fixowns && bin/fixperms
- 1045  bin/mysql < r7myamqizbogq--master-7rqtwti--mysql--main--dump.sql
- 1046  bin/magento setup:upgrade
- 1047  bin/clinotty bin/magento setup:static-content:deploy -f -j 4
- 1048  bin/clinotty bin/magento indexer:reindex
- 1049  bin/setup-domain magento2.test
- 1053  bin/fixowns && bin/fixperms
- 1054  bin/clinotty bin/magento cache:flush
- 1055  bin/clinotty bin/magento cron:install
- 1056  bin/clinotty bin/magento deploy:mode:set developer
+curl -s https://raw.githubusercontent.com/markshust/docker-magento/master/lib/template | bash
+bin/start --no-dev
+bin/copytocontainer --all
+bin/clinotty composer config --no-plugins allow-plugins.magento/magento-composer-installer true
+bin/clinotty composer config --no-plugins allow-plugins.magento/inventory-composer-installer true
+bin/clinotty composer config --no-plugins allow-plugins.laminas/laminas-dependency-plugin true
+bin/composer install
+bin/fixowns && bin/fixperms
+bin/mysql < r7myamqizbogq--master-7rqtwti--mysql--main--dump.sql
+bin/magento setup:upgrade
+bin/clinotty bin/magento setup:static-content:deploy -f -j 4
+bin/clinotty bin/magento indexer:reindex
+bin/setup-domain magento2.test
+bin/fixowns && bin/fixperms
+bin/clinotty bin/magento cache:flush
+bin/clinotty bin/magento cron:install
+bin/clinotty bin/magento deploy:mode:set developer
+
