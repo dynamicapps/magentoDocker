@@ -1,3 +1,4 @@
 src/**
 *.sql
 rootCA.pem
+magentoDockerSTAGING.code-workspace
