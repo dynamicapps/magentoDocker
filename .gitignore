@@ -1,1 +1,4 @@
 src/**
+*.sql
+rootCA.pem
+*.code-workspace
