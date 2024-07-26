@@ -46,7 +46,7 @@ bin/clinotty composer config --no-plugins allow-plugins.magento/inventory-compos
 bin/clinotty composer config --no-plugins allow-plugins.laminas/laminas-dependency-plugin true
 bin/composer install
 bin/fixowns && bin/fixperms
-bin/mysql < r7myamqizbogq--master-7rqtwti--mysql--main--dump.sql
+bin/mysql -uroot -pmagento < r7myamqizbogq--staging-5em2ouy--r7myamqizbogq_stg--dump.sql
 bin/magento setup:upgrade
 bin/clinotty bin/magento setup:static-content:deploy -f -j 4
 bin/clinotty bin/magento indexer:reindex
