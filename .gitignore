@@ -1,5 +1,4 @@
 src
-src/
 src/**
 *.sql
 rootCA.pem
