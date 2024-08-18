@@ -3,7 +3,6 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-
 return [
     'db-host' => 'db',
     'db-user' => 'magento',
@@ -11,8 +10,8 @@ return [
     'db-name' => 'magento_integration_tests',
     'db-prefix' => '',
     'backend-frontname' => 'backend',
-    'search-engine' => 'opensearch',
-    'opensearch-host' => 'opensearch',
+    'search-engine' => 'elasticsearch7',
+    'elasticsearch-host' => 'elasticsearch',
     'admin-user' => \Magento\TestFramework\Bootstrap::ADMIN_NAME,
     'admin-password' => \Magento\TestFramework\Bootstrap::ADMIN_PASSWORD,
     'admin-email' => \Magento\TestFramework\Bootstrap::ADMIN_EMAIL,
@@ -22,5 +21,4 @@ return [
     'amqp-port' => '5672',
     'amqp-user' => 'magento',
     'amqp-password' => 'magento',
-    'consumers-wait-for-messages' => '0',
 ];
