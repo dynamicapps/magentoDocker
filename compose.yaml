@@ -22,28 +22,31 @@ services:
       - ~/.composer:/var/www/.composer:cached
       - ~/.ssh/id_rsa:/var/www/.ssh/id_rsa:cached
       - ~/.ssh/known_hosts:/var/www/.ssh/known_hosts:cached
+      #      - ~/images/php/conf/php.ini:/usr/local/etc/php/php.ini:cached
       - appdata:/var/www/html
       - sockdata:/sock
       - ssldata:/etc/nginx/certs
 
-
     #extra_hosts: &appextrahosts
-      ## Selenium support, replace "magento.test" with URL of your site
-      #- "magento.test:172.17.0.1"
-      ## Linux, uncomment for Xdebug capabilities:
-      #- "host.docker.internal:host-gateway"
-
+    ## Selenium support, replace "magento.test" with URL of your site
+    #- "magento.test:172.17.0.1"
+    ## Linux, uncomment for Xdebug capabilities:
+    #- "host.docker.internal:host-gateway"
 
   phpfpm:
-    image: markoshust/magento-php:7.4-fpm
+    # replacing with custom to add php.ini
+    # image: markoshust/magento-php:7.4-fpm
+    build: images/php
     volumes: *appvolumes
     env_file: env/phpfpm.env
     #extra_hosts: *appextrahosts
 
+  # at the moment, php.ini is added to the image via custom image dockerfile, but also mapped in appvolumes
+  # probably should just do appvolumes? Same file though, so probably doesn't matter.
+
   db:
     image: mariadb:10.4
-    command:
-      --max_allowed_packet=64M
+    command: --max_allowed_packet=64M
       --optimizer_use_condition_selectivity=1
       --optimizer_switch="rowid_filter=off"
     ports:
@@ -57,20 +60,20 @@ services:
     ports:
       - "6379:6379"
 
-#  opensearch:
-#    image: markoshust/magento-opensearch:2.5-1
-#    ports:
-#      - "9200:9200"
-#      - "9300:9300"
-#    env_file: env/opensearch.env
-#    environment:
-#      - "discovery.type=single-node"
-#      ## Avoid test failures due to small disks
-#      ## More info at https://github.com/markshust/docker-magento/issues/488
-#      - "cluster.routing.allocation.disk.threshold_enabled=false"
-#      - "index.blocks.read_only_allow_delete"
-#      ## Uncomment the following line to increase the virtual memory map count
-#  #   - "max_map_count=262144"
+  #  opensearch:
+  #    image: markoshust/magento-opensearch:2.5-1
+  #    ports:
+  #      - "9200:9200"
+  #      - "9300:9300"
+  #    env_file: env/opensearch.env
+  #    environment:
+  #      - "discovery.type=single-node"
+  #      ## Avoid test failures due to small disks
+  #      ## More info at https://github.com/markshust/docker-magento/issues/488
+  #      - "cluster.routing.allocation.disk.threshold_enabled=false"
+  #      - "index.blocks.read_only_allow_delete"
+  #      ## Uncomment the following line to increase the virtual memory map count
+  #  #   - "max_map_count=262144"
 
   ## If you wish to use Elasticsearch, comment out opensearch image above and
   ## uncomment this block. Do the same in the composer.healthcheck.yaml file.
@@ -85,11 +88,11 @@ services:
     env_file: env/elasticsearch.env
     environment:
       - "discovery.type=single-node"
-  #    ## Avoid test failures due to small disks
-  #    ## More info at https://github.com/markshust/docker-magento/issues/488
+      #    ## Avoid test failures due to small disks
+      #    ## More info at https://github.com/markshust/docker-magento/issues/488
       - "cluster.routing.allocation.disk.threshold_enabled=false"
       - "index.blocks.read_only_allow_delete"
-  #    ## Uncomment the following line to increase the virtual memory map count
+      #    ## Uncomment the following line to increase the virtual memory map count
       - "max_map_count=262144"
 
   rabbitmq:
@@ -105,14 +108,14 @@ services:
     image: sj26/mailcatcher
     ports:
       - "1080:1080"
-  
+
   ## Cloudflare tunnel support, uncomment to enable
   #tunnel:
   #  container_name: cloudflared-tunnel
   #  image: cloudflare/cloudflared:latest
   #  command: tunnel run
   #  env_file: env/cloudflare.env
-  
+
   ## Blackfire support, uncomment to enable
   #blackfire:
   #  image: blackfire/blackfire:2

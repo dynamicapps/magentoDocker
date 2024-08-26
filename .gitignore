@@ -4,3 +4,4 @@ src/**
 rootCA.pem
 *.code-workspace
 
+.vscode/launch.json
